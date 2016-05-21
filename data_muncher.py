@@ -7,14 +7,13 @@ class DataMuncher:
     def __init__(self, file_name):
         self.file_name = file_name
 
-    def process_data(self):
+    def get_data(self):
         if self.file_name[-3] == 't':
             raw_data = []
             with open(self.file_name,'rU') as tsvin:
                 data = csv.reader(tsvin, delimiter='\t')
                 for row in data:
                     raw_data.append(row)
-            import code; code.interact(local=locals())
         else:
             raw_data = []
             with open(self.file_name, 'rU') as file:
@@ -22,16 +21,22 @@ class DataMuncher:
                 for row in data:
                     raw_data.append(row)
 
-        # print raw_data
 
-# minion_1 = DataMuncher("users.csv")
-# minion_1.process_data()
-#
-# minion_2 = DataMuncher("ratings.csv")
-# minion_2.process_data()
+
+##### take in the data
+
+minion_1 = DataMuncher("users.csv")
+minion_1.get_data()
+
+minion_2 = DataMuncher("ratings.csv")
+minion_2.get_data()
 
 minion_3 = DataMuncher("movies.tsv")
-minion_3.process_data()
+minion_3.get_data()
+
+
+
+
 # from __future__ import division
 # import csv
 # import matplotlib.pyplot as plt
