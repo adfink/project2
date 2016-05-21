@@ -22,8 +22,17 @@ class RatingsMuncher:
             for num in ratings:
                 if viewing['rating'] == num:
                     ratings[num] += 1
-        print ratings
-        # import code; code.interact(local=locals())
+
+        for num in ratings:
+            ratings[num] = ratings[num]/len(self.raw_data)
+        self.check_prob(ratings)
+
+    def check_prob(self,thing):
+        sum = 0
+        for num in thing:
+            sum = sum + thing[num]
+        if sum != 1:
+            raise ValueError('A very specific bad thing happened... the probabilties dont add to 1')
 
 minion = RatingsMuncher("ratings.csv")
 minion.get_data()
