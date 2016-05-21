@@ -21,6 +21,17 @@ class DataMuncher:
                 for row in data:
                     raw_data.append(row)
 
+    def compute_probabilities(self):
+
+#find probabilities for the ratings (categories)
+#   probability of a 1,2,3,4,5
+#find probabilities for each set of features for each category
+#   for instance, for ratings of 1, what are the probability
+#   that the user was male vs female,
+#   that the user was 25 vs 45 vs 18 vs 35 vs 50 vs 1 vs 56
+#to predict, take the user info and the movie info and multiply
+#the probabilities for each category and pick the largest
+
 
 
 ##### take in the data
