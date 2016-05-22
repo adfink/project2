@@ -117,8 +117,34 @@ class DataEngine:
         prob_data = {'male':0, 'female':0, 'age1':0,'age18':0,'age25':0,'age35':0,'age45':0,'age56':0}
         for i in ratings_list:
             for user_id in self.ratings_repo.ratings_users[i]:
-                x = self.users_repo.find_by_id(user_id).gender
-                import code; code.interact(local=locals())
+                user = self.users_repo.find_by_id(user_id)
+                if user.gender == "M":
+                    prob_data['male']+=1
+                if user.gender == "F":
+                    prob_data['female']+=1
+                if user.age == '1':
+                    prob_data['age1']+=1
+                if user.age == '18':
+                    prob_data['age18']+=1
+                if user.age == '25':
+                    prob_data['age25']+=1
+                if user.age == '35':
+                    prob_data['age35']+=1
+                if user.age == '45':
+                    prob_data['age45']+=1
+                if user.age == '56':
+                    prob_data['age56']+=1
+            if i == '1':
+                ratings['data1'] = prob_data
+            if i == '2':
+                ratings['data2'] = prob_data
+            if i == '3':
+                ratings['data3'] = prob_data
+            if i == '4':
+                ratings['data4'] = prob_data
+            if i == '5':
+                ratings['data5'] = prob_data
+        print ratings
 
 
 class UsersRepo:
