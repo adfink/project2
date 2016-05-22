@@ -155,6 +155,7 @@ class DataEngine:
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
                 ratings['data5'] = prob_data
+        self.user_prob = ratings
 
     def compute_probabilities_for_movies_per_ratings(self):
         ratings_list = ['1','2','3','4','5']
@@ -166,7 +167,27 @@ class DataEngine:
                 for genre in movie.genres:
                     if genre != '':
                         prob_data[genre] += 1
-            import code; code.interact(local=locals())
+            if i == '1':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                ratings['data1'] = prob_data
+            if i == '2':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                ratings['data2'] = prob_data
+            if i == '3':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                ratings['data3'] = prob_data
+            if i == '4':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                ratings['data4'] = prob_data
+            if i == '5':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                ratings['data5'] = prob_data
+        self.movie_prob = ratings
 
 
 
