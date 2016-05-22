@@ -96,6 +96,7 @@ class DataEngine:
                         raw_data.append(row)
                 counter += 1
                 self.movie_repo = MoviesRepo(raw_data)
+                self.movie_repo.populate()
             else:
                 raw_data = []
                 with open(a_file, 'rU') as file:
@@ -155,8 +156,22 @@ class DataEngine:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
                 ratings['data5'] = prob_data
 
-        
+    def compute_probabilities_for_movies_per_ratings(self):
+        ratings_list = ['1','2','3','4','5']
+        ratings = {'data1':[],'data2':[],'data3':[],'data4':[],'data5':[]}
+        for i in ratings_list:
+            prob_data = {'Animation':0, 'Adventure':0, 'Thriller':0,'Comedy':0,'Fantasy':0,'Romance':0,'Drama':0,'War':0,'Action':0,'Horror':0,'Sci-Fi':0}
+            for movie_id in self.ratings_repo.ratings_movies[i]:
+                movie = self.movies_repo.find_by_id(movie_id)
+                if user.gender == "M":
+                    prob_data['male']+=1
 
+
+# import code; code.interact(local=locals())
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
 class UsersRepo:
     def __init__(self, raw_data):
         self.raw_data = raw_data
@@ -221,11 +236,43 @@ class RatingsRepo:
 class MoviesRepo:
     def __init__(self, raw_data):
         self.raw_data = raw_data
+        self.movies = []
+    def populate(self):
+        self.clean_data()
+        for movie in self.raw_data:
+            movie_id = movie['movieID']
+            year = movie['year']
+            new_movie = Moive(movie_id,year)
+            self.movies.append(new_movie)
+    def clean_data(self):
+        cleaned_data = {}
+        #remove header row
+        self.raw_data.pop(0)
+        #create hash with keys of movieID, year, genres, name
+        for movie in self.raw_data:
+            cleaned_movie_data = {'movieID':0, 'year':0, 'name':0, 'genres':[]}
+            movieID = movie[0]
+            name = movie[1]
+            year = movie[2]
+            genres = []
+            counter = 0
+            for i in movie:
+                if counter > 2:
+                    genres.append(i)
+                counter +=1
+            import code; code.interact(local=locals())
+
+
+
+    def find_by_id(self, movie_id):
+        for movie in self.movies:
+            if movie.movie_id == movie_id:
+                return movie
 
 
 data_engine = DataEngine("ratings.csv", "users.csv", "movies.tsv")
 data_engine.get_data()
-data_engine.compute_probabilities_for_users_per_ratings()
+data_engine.compute_probabilities_for_movies_per_ratings()
 
 # minion = RatingsMuncher("ratings.csv")
 # minion.get_data()
