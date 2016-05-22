@@ -239,13 +239,17 @@ class MoviesRepo:
         self.movies = []
     def populate(self):
         self.clean_data()
-        for movie in self.raw_data:
+        for movie in self.cleaned_data:
             movie_id = movie['movieID']
             year = movie['year']
-            new_movie = Moive(movie_id,year)
+            name = movie['name']
+            genres = movie['genres']
+            new_movie = Movie(movie_id,name,year,genres)
             self.movies.append(new_movie)
+        
+
     def clean_data(self):
-        cleaned_data = {}
+        self.cleaned_data = []
         #remove header row
         self.raw_data.pop(0)
         #create hash with keys of movieID, year, genres, name
@@ -260,14 +264,23 @@ class MoviesRepo:
                 if counter > 2:
                     genres.append(i)
                 counter +=1
-            import code; code.interact(local=locals())
-
-
+            cleaned_movie_data['movieID'] = movieID
+            cleaned_movie_data['name'] = name
+            cleaned_movie_data['year'] = year
+            cleaned_movie_data['genres'] = genres
+            self.cleaned_data.append(cleaned_movie_data)
 
     def find_by_id(self, movie_id):
         for movie in self.movies:
             if movie.movie_id == movie_id:
                 return movie
+
+class Movie:
+    def __init__(self, movie_id,name,year,genres):
+        self.movie_id = movie_id
+        self.genres = genres
+        self.year = year
+        self.name = name
 
 
 data_engine = DataEngine("ratings.csv", "users.csv", "movies.tsv")
