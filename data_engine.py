@@ -114,8 +114,8 @@ class DataEngine:
     def compute_probabilities_for_users_per_ratings(self):
         ratings_list = ['1','2','3','4','5']
         ratings = {'data1':[],'data2':[],'data3':[],'data4':[],'data5':[]}
-        prob_data = {'male':0, 'female':0, 'age1':0,'age18':0,'age25':0,'age35':0,'age45':0,'age56':0}
         for i in ratings_list:
+            prob_data = {'male':0, 'female':0, 'age1':0,'age18':0,'age25':0,'age35':0,'age45':0,'age56':0}
             for user_id in self.ratings_repo.ratings_users[i]:
                 user = self.users_repo.find_by_id(user_id)
                 if user.gender == "M":
@@ -135,17 +135,27 @@ class DataEngine:
                 if user.age == '56':
                     prob_data['age56']+=1
             if i == '1':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
                 ratings['data1'] = prob_data
             if i == '2':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
                 ratings['data2'] = prob_data
             if i == '3':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
                 ratings['data3'] = prob_data
             if i == '4':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
                 ratings['data4'] = prob_data
             if i == '5':
+                for data_point in prob_data:
+                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
                 ratings['data5'] = prob_data
-        print ratings
 
+        
 
 class UsersRepo:
     def __init__(self, raw_data):
