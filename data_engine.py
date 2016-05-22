@@ -160,11 +160,14 @@ class DataEngine:
         ratings_list = ['1','2','3','4','5']
         ratings = {'data1':[],'data2':[],'data3':[],'data4':[],'data5':[]}
         for i in ratings_list:
-            prob_data = {'Animation':0, 'Adventure':0, 'Thriller':0,'Comedy':0,'Fantasy':0,'Romance':0,'Drama':0,'War':0,'Action':0,'Horror':0,'Sci-Fi':0}
+            prob_data = {'Animation':0,'Childrens':0,'Crime':0,'Mystery':0,'Musical':0,'Documentary':0,'Western':0,'Film-Noir':0, 'Adventure':0, 'Thriller':0,'Comedy':0,'Fantasy':0,'Romance':0,'Drama':0,'War':0,'Action':0,'Horror':0,'Sci-Fi':0}
             for movie_id in self.ratings_repo.ratings_movies[i]:
-                movie = self.movies_repo.find_by_id(movie_id)
-                if user.gender == "M":
-                    prob_data['male']+=1
+                movie = self.movie_repo.find_by_id(movie_id)
+                for genre in movie.genres:
+                    if genre != '':
+                        prob_data[genre] += 1
+            import code; code.interact(local=locals())
+
 
 
 # import code; code.interact(local=locals())
@@ -246,7 +249,6 @@ class MoviesRepo:
             genres = movie['genres']
             new_movie = Movie(movie_id,name,year,genres)
             self.movies.append(new_movie)
-        
 
     def clean_data(self):
         self.cleaned_data = []
@@ -262,6 +264,8 @@ class MoviesRepo:
             counter = 0
             for i in movie:
                 if counter > 2:
+                    if i == "Children's":
+                        i = 'Childrens'
                     genres.append(i)
                 counter +=1
             cleaned_movie_data['movieID'] = movieID
