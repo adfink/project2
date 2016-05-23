@@ -144,10 +144,16 @@ class DataEngine:
                     case_probs.append(self.movie_prob[r][genre])
             case_probs.append(self.user_prob[r]["age"+user.age])
             case_probs.append(self.user_prob[r][user.gender])
-            total_prob = reduce(lambda x, y: x*y, case_probs)
+            total_prob = 1
+            for i in case_probs:
+                total_prob = i*total_prob
             ratings_probs[r] = total_prob
-
-        return max(ratings_probs, key=ratings_probs.get)
+        max_rating = 0
+        for r in ratings_probs:
+            if ratings_probs[r] > max_rating:
+                max_rating = r
+        # import code; code.interact(local=locals())
+        return max_rating
 
 
 
