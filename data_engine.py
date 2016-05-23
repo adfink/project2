@@ -2,17 +2,18 @@
 from __future__ import division
 import csv
 
-
 class DataEngine:
 
-    def __init__(self, r,u,m):
+    def __init__(self, r,u,m,p):
         self.data_files = []
         ratings_file = r
         users_file = u
         movies_file = m
+        predict_file = p
         self.data_files.append(ratings_file)
         self.data_files.append(users_file)
         self.data_files.append(movies_file)
+        self.data_files.append(predict_file)
 
     def get_data(self):
         counter = 0
@@ -40,18 +41,20 @@ class DataEngine:
                 elif counter == 2:
                     self.users_repo = UsersRepo(raw_data)
                     self.users_repo.populate()
+                elif counter == 4:
+                    self.empty_predictions = raw_data
 
     def compute_probabilities_for_users_per_ratings(self):
         ratings_list = ['1','2','3','4','5']
-        ratings = {'data1':[],'data2':[],'data3':[],'data4':[],'data5':[]}
+        ratings = {'1':[],'2':[],'3':[],'4':[],'5':[]}
         for i in ratings_list:
-            prob_data = {'male':0, 'female':0, 'age1':0,'age18':0,'age25':0,'age35':0,'age45':0,'age56':0}
+            prob_data = {'M':0, 'F':0, 'age1':0,'age18':0,'age25':0,'age35':0,'age45':0,'age50':0,'age56':0}
             for user_id in self.ratings_repo.ratings_users[i]:
                 user = self.users_repo.find_by_id(user_id)
                 if user.gender == "M":
-                    prob_data['male']+=1
+                    prob_data['M']+=1
                 if user.gender == "F":
-                    prob_data['female']+=1
+                    prob_data['F']+=1
                 if user.age == '1':
                     prob_data['age1']+=1
                 if user.age == '18':
@@ -62,33 +65,35 @@ class DataEngine:
                     prob_data['age35']+=1
                 if user.age == '45':
                     prob_data['age45']+=1
+                if user.age == '50':
+                    prob_data['age50']+=1
                 if user.age == '56':
                     prob_data['age56']+=1
             if i == '1':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
-                ratings['data1'] = prob_data
+                ratings['1'] = prob_data
             if i == '2':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
-                ratings['data2'] = prob_data
+                ratings['2'] = prob_data
             if i == '3':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
-                ratings['data3'] = prob_data
+                ratings['3'] = prob_data
             if i == '4':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
-                ratings['data4'] = prob_data
+                ratings['4'] = prob_data
             if i == '5':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
-                ratings['data5'] = prob_data
+                ratings['5'] = prob_data
         self.user_prob = ratings
 
     def compute_probabilities_for_movies_per_ratings(self):
         ratings_list = ['1','2','3','4','5']
-        ratings = {'data1':[],'data2':[],'data3':[],'data4':[],'data5':[]}
+        ratings = {'1':[],'2':[],'3':[],'4':[],'5':[]}
         for i in ratings_list:
             prob_data = {'Animation':0,'Childrens':0,'Crime':0,'Mystery':0,'Musical':0,'Documentary':0,'Western':0,'Film-Noir':0, 'Adventure':0, 'Thriller':0,'Comedy':0,'Fantasy':0,'Romance':0,'Drama':0,'War':0,'Action':0,'Horror':0,'Sci-Fi':0}
             for movie_id in self.ratings_repo.ratings_movies[i]:
@@ -99,24 +104,53 @@ class DataEngine:
             if i == '1':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
-                ratings['data1'] = prob_data
+                ratings['1'] = prob_data
             if i == '2':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
-                ratings['data2'] = prob_data
+                ratings['2'] = prob_data
             if i == '3':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
-                ratings['data3'] = prob_data
+                ratings['3'] = prob_data
             if i == '4':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
-                ratings['data4'] = prob_data
+                ratings['4'] = prob_data
             if i == '5':
                 for data_point in prob_data:
                     prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
-                ratings['data5'] = prob_data
+                ratings['5'] = prob_data
         self.movie_prob = ratings
+
+
+    def predict(self):
+        for case in self.empty_predictions:
+            best_guess = self.collect_probabilties(case)
+            case['rating'] = best_guess
+        import code; code.interact(local=locals())
+
+    def collect_probabilties(self, case):
+        ratings_list = ['1','2','3','4','5']
+        ratings_probs = {'1':0,'2':0,'3':0,'4':0,'5':0}
+        user = self.users_repo.find_by_id(case['userID'])
+        movie = self.movie_repo.find_by_id(case['movieID'])
+        case_user_probs = []
+        case_movie_probs = []
+        case_probs = []
+        for r in ratings_list:
+            for genre in movie.genres:
+                if genre != '':
+                    case_probs.append(self.movie_prob[r][genre])
+            case_probs.append(self.user_prob[r]["age"+user.age])
+            case_probs.append(self.user_prob[r][user.gender])
+            total_prob = reduce(lambda x, y: x*y, case_probs)
+            ratings_probs[r] = total_prob
+
+        return max(ratings_probs, key=ratings_probs.get)
+
+
+
 
 
 
@@ -237,14 +271,20 @@ class Movie:
         self.name = name
 
 
-data_engine = DataEngine("ratings.csv", "users.csv", "movies.tsv")
+data_engine = DataEngine("ratings.csv", "users.csv", "movies.tsv", "predict.csv")
 data_engine.get_data()
 data_engine.compute_probabilities_for_movies_per_ratings()
 data_engine.compute_probabilities_for_users_per_ratings()
+data_engine.predict()
 
 
 
 # import code; code.interact(local=locals())
+#
+# try:
+#     case_probs.append(self.movie_prob[r][genre])
+# except Exception:
+#     import code; code.interact(local=locals())
 
 #find probabilities for the ratings (categories)
 #   probability of a 1,2,3,4,5
