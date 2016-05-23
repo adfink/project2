@@ -71,23 +71,23 @@ class DataEngine:
                     prob_data['age56']+=1
             if i == '1':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['1'] = prob_data
             if i == '2':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['2'] = prob_data
             if i == '3':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['3'] = prob_data
             if i == '4':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['4'] = prob_data
             if i == '5':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_users[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['5'] = prob_data
         self.user_prob = ratings
 
@@ -104,23 +104,23 @@ class DataEngine:
                         prob_data[genre] += 1
             if i == '1':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['1'] = prob_data
             if i == '2':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['2'] = prob_data
             if i == '3':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['3'] = prob_data
             if i == '4':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['4'] = prob_data
             if i == '5':
                 for data_point in prob_data:
-                    prob_data[data_point] = prob_data[data_point] /len(self.ratings_repo.ratings_movies[i])
+                    prob_data[data_point] = prob_data[data_point]
                 ratings['5'] = prob_data
         self.movie_prob = ratings
 
@@ -128,10 +128,12 @@ class DataEngine:
     def predict(self):
         self.counter = 0
         for case in self.empty_predictions:
+
             self.counter += 1
             best_guess = self.collect_probabilties(case)
             case['rating'] = best_guess
         import code; code.interact(local=locals())
+
 
     def collect_probabilties(self, case):
         ratings_list = ['1','2','3','4','5']
