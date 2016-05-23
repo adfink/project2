@@ -4,16 +4,18 @@ import csv
 
 class DataEngine:
 
-    def __init__(self, r,u,m,p):
+    def __init__(self, r,u,m,p,p2):
         self.data_files = []
         ratings_file = r
         users_file = u
         movies_file = m
         predict_file = p
+        predict_file2 = p2
         self.data_files.append(ratings_file)
         self.data_files.append(users_file)
         self.data_files.append(movies_file)
         self.data_files.append(predict_file)
+        self.data_files.append(predict_file2)
 
     def get_data(self):
         counter = 0
@@ -43,6 +45,10 @@ class DataEngine:
                     self.users_repo.populate()
                 elif counter == 4:
                     self.empty_predictions = raw_data
+                elif counter == 5:
+                    self.empty_predictions_ave = raw_data
+                    # self.empty_predictions_ave = raw_data[:]
+
 
     def compute_probabilities_for_users_per_ratings(self):
         ratings_list = ['1','2','3','4','5']
@@ -127,43 +133,28 @@ class DataEngine:
 
     def predict(self):
         self.counter = 0
+        for case2 in self.empty_predictions_ave:
+            self.counter += 1
+            predict_values = self.collect_probabilties(case2)
+            best_guess_ave = predict_values[1]
+            case2['rating'] = best_guess_ave
+
         for case in self.empty_predictions:
             self.counter += 1
-            best_guess = self.collect_probabilties(case)
+            predict_values = self.collect_probabilties(case)
+            best_guess = predict_values[0]
             case['rating'] = best_guess
+
+
+        with open('V1predict.csv', 'w') as outfile:
+            fp = csv.DictWriter(outfile, self.empty_predictions_ave[0].keys())
+            fp.writeheader()
+            fp.writerows(self.empty_predictions_ave)
 
         with open('V2predict.csv', 'w') as outfile:
             fp = csv.DictWriter(outfile, self.empty_predictions[0].keys())
             fp.writeheader()
             fp.writerows(self.empty_predictions)
-        #
-        # toCSV = self.empty_predictions
-        # keys = toCSV[0].keys()
-        # with open('V2predict.csv', 'w') as output_file:
-        #     dict_writer = csv.DictWriter(output_file, keys)
-        #     dict_writer.writeheader()
-        #     dict_writer.writerows(toCSV)
-
-        # import code; code.interact(local=locals())
-        # with open('V2predict_out.csv', 'wb') as f:  # Just use 'w' mode in 3.x
-        #     w = csv.DictWriter(f, self.empty_predictions.keys())
-        #     w.writeheader()
-        #     w.writerow(my_dict)
-
-        # inputData = self.empty_predictions
-        # dataCSV = open('V2predict_out.csv', 'w')
-        # writer = csv.writer(dataCSV, dialect='excel')
-        # writer.writerow(['userID', 'movieID', 'predicted_rating'])
-        #
-        # for line in inputData:
-        #     tmp = line.split()
-        #     tmp_uid = str(tmp[0])
-        #     tmp_mid = float(tmp[1])
-        #     tmp_R = float(tmp[2])
-        #     writer.writerow([tmp_uid, tmp_mid, tmp_R])
-        #     import code; code.interact(local=locals())
-        # file.close(dataCSV)
-
 
 
     def collect_probabilties(self, case):
@@ -173,7 +164,7 @@ class DataEngine:
         movie = self.movie_repo.find_by_id(case['movieID'])
         case_user_probs = []
         case_movie_probs = []
-
+        return_values = []
         counter = 0
         for r in ratings_list:
             case_probs = []
@@ -185,7 +176,6 @@ class DataEngine:
             total_prob = 1
             for i in case_probs:
                 total_prob = total_prob*i
-
             ratings_probs[r] = total_prob
 
         max_rating = 0
@@ -193,12 +183,16 @@ class DataEngine:
             if ratings_probs[r] > max_rating:
                 max_rating = ratings_probs[r]
                 real_max_rating = r
-        return real_max_rating
-
-
-
-
-
+        return_values.append(real_max_rating)
+        tot = 0
+        tot2 = 0
+        for r in ratings_probs:
+            tot = tot + int(r)*ratings_probs[r]
+            tot2 = tot2 + ratings_probs[r]
+        average = tot/tot2
+        return_values.append(average)
+        # return real_max_rating
+        return return_values
 
 # import code; code.interact(local=locals())
 ####################################################################################################
@@ -317,27 +311,8 @@ class Movie:
         self.name = name
 
 
-data_engine = DataEngine("ratings.csv", "users.csv", "movies.tsv", "V2predict_in.csv")
+data_engine = DataEngine("ratings.csv", "users.csv", "movies.tsv", "V2predict_in.csv","V1predict_in.csv")
 data_engine.get_data()
 data_engine.compute_probabilities_for_movies_per_ratings()
 data_engine.compute_probabilities_for_users_per_ratings()
 data_engine.predict()
-
-
-
-# import code; code.interact(local=locals())
-#
-# try:
-#     case_probs.append(self.movie_prob[r][genre])
-# except Exception:
-#     import code; code.interact(local=locals())
-
-#find probabilities for the ratings (categories)
-#   probability of a 1,2,3,4,5
-#find probabilities for each set of features for each category
-#   for instance, for ratings of 1, what are the probability
-#   that the user was male vs female,
-#   that the user was 25 vs 45 vs 18 vs 35 vs 50 vs 1 vs 56
-#       so action step: collect all userIDs and all movieIDs for ratings of 1
-#to predict, take the user info and the movie info and multiply
-#the probabilities for each category and pick the largest
